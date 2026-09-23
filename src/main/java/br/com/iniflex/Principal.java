@@ -1,9 +1,12 @@
 package br.com.iniflex;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import br.com.iniflex.model.Funcionario;
 
@@ -75,10 +78,32 @@ public class Principal {
             "Gerente"
         ));
 
+        funcionarios.removeIf(
+            funcionario -> funcionario.getNome().equals("João")
+        );
+
+        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        Locale brasil = Locale.forLanguageTag("pt-BR");
+
+        java.text.NumberFormat formatoNumero = java.text.NumberFormat.getNumberInstance(brasil);
+
+        formatoNumero.setMinimumFractionDigits(2);
+        formatoNumero.setMaximumFractionDigits(2);
+
         System.out.println("Quantidade de funcionários: " + funcionarios.size());
 
         for(Funcionario funcionario : funcionarios){
-            System.out.println(funcionario.getNome());
+
+            System.out.println(
+                "Nome: " + funcionario.getNome()
+                + " | Data de Nascimento: "
+                + funcionario.getDataNascimento().format(formatoData)
+                + " | Salário: "
+                + formatoNumero.format(funcionario.getSalario())
+                + " | Função: "
+                + funcionario.getFuncao()
+            );
         }
     }
 }
