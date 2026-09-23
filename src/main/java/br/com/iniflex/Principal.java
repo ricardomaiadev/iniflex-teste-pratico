@@ -1,16 +1,19 @@
 package br.com.iniflex;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Optional;
 
 import br.com.iniflex.model.Funcionario;
 
@@ -153,5 +156,39 @@ public class Principal {
             };
         }
 
+        System.out.println("\nFuncionários que fazem aniversário em outubro ou dezembro: ");
+
+        funcionarios.stream()
+            .filter(funcionario -> {
+                int mes = funcionario.getDataNascimento().getMonthValue();
+
+                return mes == 10 || mes == 12;
+            })
+            .forEach(funcionario ->
+                System.out.println(
+                    funcionario.getNome()
+                    + " - "
+                    + funcionario.getDataNascimento().format(formatoData)
+                )
+            );
+        
+        Optional<Funcionario> funcionarioMaisVelho = 
+            funcionarios.stream()
+                .min(Comparator.comparing(Funcionario::getDataNascimento));
+        
+        funcionarioMaisVelho.ifPresent(funcionario -> {
+            int idade = Period.between(
+                funcionario.getDataNascimento(),
+                LocalDate.now()
+            ).getYears();
+
+
+        System.out.println("\nFuncionário com maior idade: "
+                + "\nNome: " + funcionario.getNome()
+                + "\nIdade: " + idade 
+            );
+        });
+
+        
     }
 }
