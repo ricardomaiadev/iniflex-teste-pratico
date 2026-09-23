@@ -2,11 +2,15 @@ package br.com.iniflex;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import br.com.iniflex.model.Funcionario;
 
@@ -91,7 +95,7 @@ public class Principal {
         formatoNumero.setMinimumFractionDigits(2);
         formatoNumero.setMaximumFractionDigits(2);
 
-        System.out.println("Quantidade de funcionários: " + funcionarios.size());
+        System.out.println("\nQuantidade de funcionários: " + funcionarios.size() + " \n");
 
         for(Funcionario funcionario : funcionarios){
 
@@ -105,5 +109,49 @@ public class Principal {
                 + funcionario.getFuncao()
             );
         }
+
+        BigDecimal percentualAumento = new BigDecimal("1.10");
+
+        for(Funcionario funcionario : funcionarios) {
+            BigDecimal novoSalario = funcionario
+                .getSalario()
+                .multiply(percentualAumento)
+                .setScale(2, RoundingMode.HALF_UP);
+            
+            funcionario.setSalario(novoSalario);
+        }
+
+        System.out.println("\nApós aumento de 10%:\n");
+
+        for(Funcionario funcionario : funcionarios) {
+            System.out.println(
+                funcionario.getNome()
+                + ": "
+                + formatoNumero.format(funcionario.getSalario())
+            );
+        }
+
+        Map<String, List<Funcionario>> funcionariosPorFuncao = 
+            funcionarios.stream()
+                .collect(
+                    Collectors.groupingBy(
+                        Funcionario::getFuncao,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                    )
+                );
+        
+
+        System.out.println("\nFuncionários agrupados por função: \n");
+
+        for (Map.Entry<String, List<Funcionario>> grupo : funcionariosPorFuncao.entrySet()) {
+            System.out.println("\nFunção: " + grupo.getKey());
+
+            for (Funcionario funcionario : grupo.getValue()){
+                System.out.println("- " + funcionario.getNome());
+
+            };
+        }
+
     }
 }
