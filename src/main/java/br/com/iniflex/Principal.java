@@ -189,6 +189,44 @@ public class Principal {
             );
         });
 
+        System.out.println("\nFuncionários em ordem alfabética: ");
+
+        funcionarios.stream()
+            .sorted(Comparator.comparing(Funcionario::getNome))
+            .forEach(funcionario -> 
+                System.out.println(funcionario.getNome()
+                )
+            );
+
+        BigDecimal totalSalarios = funcionarios.stream()
+            .map(Funcionario::getSalario)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        System.out.println("\nTotal dos salários: "
+                + formatoNumero.format(totalSalarios)
+        );
+
+        BigDecimal salarioMinimo = new BigDecimal("1212.00");
+
+        System.out.println("\nQuantidade de salários minimos por funcionário: ");
+
+        for ( Funcionario funcionario : funcionarios ) {
+
+            BigDecimal quantidadeSalariosMinimos = 
+                funcionario.getSalario()
+                    .divide( 
+                        salarioMinimo, 
+                        2, 
+                        RoundingMode.HALF_UP
+                    );
+
+        System.out.println(
+                funcionario.getNome()
+                + ": "
+                + formatoNumero.format(quantidadeSalariosMinimos)
+                + " salários minimos"
+            );
+        }
         
     }
 }
