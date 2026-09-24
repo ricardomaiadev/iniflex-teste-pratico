@@ -18,11 +18,46 @@ import java.util.Optional;
 import br.com.iniflex.model.Funcionario;
 
 public class Principal {
+
+    private static final DateTimeFormatter FORMATO_DATA = 
+        DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    private static final BigDecimal FATOR_AUMENTO = new BigDecimal("1.10");
+
+    private static final BigDecimal SALARIO_MINIMO = new BigDecimal("1212.00");
     
     public static void main(String[] args) {
 
-        List<Funcionario> funcionarios = new ArrayList<>();
+        List<Funcionario> funcionarios = criarFuncionarios();
 
+        NumberFormat formatoNumero = criarFormatoNumero();
+        
+        removerFuncionario(funcionarios, "João");
+        
+        imprimirFuncionarios(funcionarios, formatoNumero);
+        
+        aplicarAumentoSalarial(funcionarios);
+        
+        Map<String, List<Funcionario>> funcionariosPorFuncao = agruparPorFuncao(funcionarios);
+
+        imprimirFuncionariosPorFuncao(funcionariosPorFuncao);
+
+        imprimirAniversariantes(funcionarios);
+
+        imprimirFuncionarioMaisVelho(funcionarios);
+        
+        imprimirFuncionariosEmOrdemAlfabetica(funcionarios);
+
+        imprimirTotalSalarios(funcionarios, formatoNumero);
+
+        imprimirSalariosMinimos(funcionarios, formatoNumero);
+        
+    }
+
+    private static List<Funcionario> criarFuncionarios() {
+
+        List<Funcionario> funcionarios = new ArrayList<>();
+        
         funcionarios.add(new Funcionario(
             "Maria",
             LocalDate.of(2000, 10, 18),
@@ -36,48 +71,56 @@ public class Principal {
             new BigDecimal("2284.38"),
             "Operador"
         ));
+
         funcionarios.add(new Funcionario(
             "Caio",
             LocalDate.of(1961, 5, 2),
             new BigDecimal("9836.14"),
-            "Coordernador"
+            "Coordenador"
         ));
+
         funcionarios.add(new Funcionario(
             "Miguel",
             LocalDate.of(1988, 10, 14),
             new BigDecimal("19119.88"),
             "Diretor"
         ));
+
         funcionarios.add(new Funcionario(
             "Alice",
             LocalDate.of(1995, 1, 5),
             new BigDecimal("2234.68"),
             "Recepcionista"
         ));
+
         funcionarios.add(new Funcionario(
             "Heitor",
             LocalDate.of(1999, 11, 19),
             new BigDecimal("1582.72"),
             "Operador"
         ));
+
         funcionarios.add(new Funcionario(
             "Arthur",
             LocalDate.of(1993, 3, 31),
             new BigDecimal("4071.84"),
             "Contador"
         ));
+
         funcionarios.add(new Funcionario(
             "Laura",
             LocalDate.of(1994, 7, 8),
             new BigDecimal("3017.45"),
             "Gerente"
         ));
+
         funcionarios.add(new Funcionario(
             "Heloísa",
             LocalDate.of(2003, 5, 24),
             new BigDecimal("1606.85"),
             "Eletricista"
         ));
+
         funcionarios.add(new Funcionario(
             "Helena",
             LocalDate.of(1996, 9, 2),
@@ -85,57 +128,59 @@ public class Principal {
             "Gerente"
         ));
 
-        funcionarios.removeIf(
-            funcionario -> funcionario.getNome().equals("João")
-        );
+        return funcionarios;
 
-        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    }
+
+    private static NumberFormat criarFormatoNumero() {
 
         Locale brasil = Locale.forLanguageTag("pt-BR");
 
-        java.text.NumberFormat formatoNumero = java.text.NumberFormat.getNumberInstance(brasil);
+        NumberFormat formatoNumero = NumberFormat.getNumberInstance(brasil);
 
         formatoNumero.setMinimumFractionDigits(2);
         formatoNumero.setMaximumFractionDigits(2);
 
-        System.out.println("\nQuantidade de funcionários: " + funcionarios.size() + " \n");
+        return formatoNumero;
+    }
+
+    private static void removerFuncionario(List<Funcionario> funcionarios, String nome) {
+
+        funcionarios.removeIf(funcionario -> funcionario.getNome().equals(nome));
+    }
+
+    private static void imprimirFuncionarios(List<Funcionario> funcionarios, NumberFormat formatoNumero) {
 
         for(Funcionario funcionario : funcionarios){
 
             System.out.println(
                 "Nome: " + funcionario.getNome()
                 + " | Data de Nascimento: "
-                + funcionario.getDataNascimento().format(formatoData)
+                + funcionario.getDataNascimento().format(FORMATO_DATA)
                 + " | Salário: "
                 + formatoNumero.format(funcionario.getSalario())
                 + " | Função: "
                 + funcionario.getFuncao()
             );
         }
+    }
 
-        BigDecimal percentualAumento = new BigDecimal("1.10");
+    private static void aplicarAumentoSalarial(List<Funcionario> funcionarios) {
 
         for(Funcionario funcionario : funcionarios) {
             BigDecimal novoSalario = funcionario
                 .getSalario()
-                .multiply(percentualAumento)
+                .multiply(FATOR_AUMENTO)
                 .setScale(2, RoundingMode.HALF_UP);
             
             funcionario.setSalario(novoSalario);
         }
 
         System.out.println("\nApós aumento de 10%:\n");
+    }
 
-        for(Funcionario funcionario : funcionarios) {
-            System.out.println(
-                funcionario.getNome()
-                + ": "
-                + formatoNumero.format(funcionario.getSalario())
-            );
-        }
-
-        Map<String, List<Funcionario>> funcionariosPorFuncao = 
-            funcionarios.stream()
+    private static Map<String, List<Funcionario>> agruparPorFuncao (List<Funcionario>funcionarios) {
+        return funcionarios.stream()
                 .collect(
                     Collectors.groupingBy(
                         Funcionario::getFuncao,
@@ -143,7 +188,9 @@ public class Principal {
                         Collectors.toList()
                     )
                 );
-        
+    }
+
+    private static void imprimirFuncionariosPorFuncao(Map<String, List<Funcionario>> funcionariosPorFuncao) {        
 
         System.out.println("\nFuncionários agrupados por função: \n");
 
@@ -153,8 +200,12 @@ public class Principal {
             for (Funcionario funcionario : grupo.getValue()){
                 System.out.println("- " + funcionario.getNome());
 
-            };
+            }
         }
+
+    }
+
+    private static void imprimirAniversariantes(List<Funcionario> funcionarios) {
 
         System.out.println("\nFuncionários que fazem aniversário em outubro ou dezembro: ");
 
@@ -168,10 +219,14 @@ public class Principal {
                 System.out.println(
                     funcionario.getNome()
                     + " - "
-                    + funcionario.getDataNascimento().format(formatoData)
+                    + funcionario.getDataNascimento().format(FORMATO_DATA)
                 )
             );
-        
+
+    }
+
+    private static void imprimirFuncionarioMaisVelho(List<Funcionario> funcionarios) {
+
         Optional<Funcionario> funcionarioMaisVelho = 
             funcionarios.stream()
                 .min(Comparator.comparing(Funcionario::getDataNascimento));
@@ -188,6 +243,9 @@ public class Principal {
                 + "\nIdade: " + idade 
             );
         });
+    }
+
+    private static void imprimirFuncionariosEmOrdemAlfabetica(List<Funcionario> funcionarios) {
 
         System.out.println("\nFuncionários em ordem alfabética: ");
 
@@ -197,16 +255,25 @@ public class Principal {
                 System.out.println(funcionario.getNome()
                 )
             );
+    }
 
-        BigDecimal totalSalarios = funcionarios.stream()
+    private static BigDecimal calcularTotalSalarios(List<Funcionario> funcionarios) {
+
+        return funcionarios.stream()
             .map(Funcionario::getSalario)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-        
-        System.out.println("\nTotal dos salários: "
-                + formatoNumero.format(totalSalarios)
-        );
+    }
 
-        BigDecimal salarioMinimo = new BigDecimal("1212.00");
+    private static void imprimirTotalSalarios(List<Funcionario> funcionarios, NumberFormat formatoNumero) {
+
+        BigDecimal totalSalarios = calcularTotalSalarios(funcionarios);
+
+        System.out.println("\nTotal dos salários: "
+            + formatoNumero.format(totalSalarios)
+        );
+    }
+
+    private static void imprimirSalariosMinimos(List<Funcionario> funcionarios, NumberFormat formatoNumero) {
 
         System.out.println("\nQuantidade de salários minimos por funcionário: ");
 
@@ -215,7 +282,7 @@ public class Principal {
             BigDecimal quantidadeSalariosMinimos = 
                 funcionario.getSalario()
                     .divide( 
-                        salarioMinimo, 
+                        SALARIO_MINIMO, 
                         2, 
                         RoundingMode.HALF_UP
                     );
@@ -227,6 +294,5 @@ public class Principal {
                 + " salários minimos"
             );
         }
-        
     }
 }

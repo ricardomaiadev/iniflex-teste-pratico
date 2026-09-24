@@ -3,8 +3,6 @@ package br.com.iniflex.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import br.com.iniflex.model.Pessoa;
-
 public class Funcionario extends Pessoa {
     
     private BigDecimal salario;
