@@ -47,7 +47,7 @@ Responsável pela execução dos requesitos propostos no teste.
 - Inserção dos funcionários conforme os dados fornecidos no teste. 
 - Remoção do funcionário João.
 - Impressão dos funcionários com:
-    - data no formato `dd/MM/yyyy
+    - data no formato `dd/MM/yyyy`
     - valores numéricos com separador de milhar e decimal conforme o padrão brasileiro.
 - Aplicação de aumento salarial de 10%
 - Agrupamento dos funcionarios por função utilizando `Map`
